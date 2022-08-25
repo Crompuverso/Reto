@@ -18,27 +18,30 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private Collection<? extends GrantedAuthority> authorities;
-    private String dni;
-    private String email;
+
+    private String name;
 
     @JsonIgnore
     private String password;
 
+    private String surname;
+
     private String username;
 
-    public UserDetailsImpl(List<GrantedAuthority> authorities, String dni, String email, String password,
+    public UserDetailsImpl(List<GrantedAuthority> authorities, String name, String password, String surname,
             String username) {
         this.authorities = authorities;
-        this.dni = dni;
-        this.email = email;
+        this.name = name;
         this.password = password;
+        this.surname = surname;
         this.username = username;
     }
 
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
-        return new UserDetailsImpl(authorities, user.getDni(), user.getEmail(), user.getPassword(), user.getUsername());
+        return new UserDetailsImpl(authorities, user.getName(), user.getPassword(), user.getSurname(),
+                user.getUsername());
     }
 
     @Override

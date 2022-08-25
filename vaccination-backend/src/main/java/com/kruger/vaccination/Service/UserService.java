@@ -12,11 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kruger.vaccination.DTO.ExtendedUserDTO;
 import com.kruger.vaccination.DTO.UserDTO;
+import com.kruger.vaccination.Exception.NotFoundExceptionHandler;
 import com.kruger.vaccination.model.ERole;
 import com.kruger.vaccination.model.Role;
 import com.kruger.vaccination.model.User;
+import com.kruger.vaccination.model.UserVaccine;
+import com.kruger.vaccination.model.Vaccine;
 import com.kruger.vaccination.repository.RoleRepository;
 import com.kruger.vaccination.repository.UserRepository;
+import com.kruger.vaccination.repository.VaccineRepository;
 
 @Service
 public class UserService implements IUserService {
@@ -30,9 +34,26 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private VaccineRepository vaccineRepository;
+
     @Override
     public void delete(Long id) {
-        this.userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundExceptionHandler("User", "id", id.toString()));
+        userRepository.delete(user);
+    }
+
+    @Override
+    public UserDTO find(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundExceptionHandler("User", "id", id.toString()));
+        Set<String> roles = new HashSet<>();
+        user.getRoles().forEach(role -> {
+            roles.add(role.getName().name());
+        });
+        return new UserDTO(user.getDni(), user.getEmail(), user.getId(), user.getName(), roles, user.getSurname(),
+                user.getUsername());
     }
 
     @Override
@@ -43,7 +64,8 @@ public class UserService implements IUserService {
             user.getRoles().forEach(role -> {
                 roles.add(role.getName().name());
             });
-            users.add(new UserDTO(user.getDni(), user.getEmail(), user.getName(), roles, user.getSurname()));
+            users.add(new UserDTO(user.getDni(), user.getEmail(), user.getId(), user.getName(), roles,
+                    user.getSurname(), user.getUsername()));
         });
         return users;
     }
@@ -81,28 +103,36 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void save(UserDTO userDTO) {
-        User user = new User(userDTO.getDni(), userDTO.getEmail(), userDTO.getName(),
-                passwordEncoder.encode(generatePassword(userDTO.getDni(), userDTO.getEmail())),
-                userDTO.getSurname(), generateUsername(userDTO.getName(), userDTO.getSurname()));
+        Long id = userDTO.getId();
+        User user;
+        if (id != null && id > 0) {
+            user = userRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundExceptionHandler("User", "id", id.toString()));
+            user.setDni(userDTO.getDni());
+            user.setEmail(userDTO.getEmail());
+            user.setName(userDTO.getName());
+            user.setSurname(userDTO.getSurname());
+        } else {
+            user = new User(userDTO.getDni(), userDTO.getEmail(), userDTO.getName(),
+                    passwordEncoder.encode(generatePassword(userDTO.getDni(), userDTO.getEmail())),
+                    userDTO.getSurname(), generateUsername(userDTO.getName(), userDTO.getSurname()));
+        }
         Set<String> strRoles = userDTO.getRoles();
         Set<Role> roles = new HashSet<>();
-        if (strRoles == null) {
-            roles.add(roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role no encontrado")));
-        } else {
-            strRoles.forEach(strRole -> {
-                switch (strRole) {
-                    case "administrador":
-                        roles.add(roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role no encontrado")));
-                        break;
-                    default:
-                        roles.add(roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role no encontrado")));
-                        break;
-                }
-            });
-        }
+        strRoles.forEach(strRole -> {
+            switch (strRole) {
+                case "administrador":
+                    roles.add(roleRepository.findByName(ERole.ROLE_ADMIN)
+                            .orElseThrow(() -> new NotFoundExceptionHandler("Role", "nombre",
+                                    ERole.ROLE_ADMIN.name())));
+                    break;
+                default:
+                    roles.add(roleRepository.findByName(ERole.ROLE_USER)
+                            .orElseThrow(
+                                    () -> new NotFoundExceptionHandler("Role", "nombre", ERole.ROLE_USER.name())));
+                    break;
+            }
+        });
         user.setRoles(roles);
         if (userDTO.getId() != null && userDTO.getId() > 0) {
             user.setId(userDTO.getId());
@@ -112,8 +142,23 @@ public class UserService implements IUserService {
 
     @Override
     public void update(Long id, ExtendedUserDTO userDTO) {
-        User user = new User(userDTO.getAddress(), userDTO.getBirthDate(), userDTO.getDni(), userDTO.getEmail(), id,
-                userDTO.getName(), userDTO.getPhone(), userDTO.getSurname(), userDTO.isVaccination());
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundExceptionHandler("User", "id", id.toString()));
+        user.setAddress(userDTO.getAddress());
+        user.setBirthDate(userDTO.getBirthDate());
+        user.setDni(userDTO.getDni());
+        user.setEmail(userDTO.getEmail());
+        user.setName(userDTO.getName());
+        user.setPhone(userDTO.getPhone());
+        user.setSurname(userDTO.getSurname());
+        user.setVaccination(userDTO.isVaccination());
+        Set<UserVaccine> userVaccines = new HashSet<>();
+        userDTO.getUserVaccines().forEach(userVaccine -> {
+            Vaccine vaccine = vaccineRepository.findById(userVaccine.getVaccineId()).orElseThrow(
+                    () -> new NotFoundExceptionHandler("Vacuna", "id", userVaccine.getVaccineId().toString()));
+            userVaccines.add(new UserVaccine(userVaccine.getDose(), user, vaccine, userVaccine.getVaccineDate()));
+        });
+        user.setUserVaccines(userVaccines);
         userRepository.save(user);
     }
 }

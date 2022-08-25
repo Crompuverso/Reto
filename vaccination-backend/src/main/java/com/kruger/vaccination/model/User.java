@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -59,7 +60,7 @@ public class User {
     private String phone;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "roleId"), joinColumns = @JoinColumn(name = "workerId"), name = "user_roles")
+    @JoinTable(inverseJoinColumns = @JoinColumn(foreignKey = @ForeignKey(name = "roleId"), name = "roleId"), joinColumns = @JoinColumn(foreignKey = @ForeignKey(name = "workerId"), name = "workerId"), name = "user_roles")
     private Set<Role> roles = new HashSet<>();
 
     @NotBlank(message = "El campo de apellido o apellidos es requerido")
@@ -68,7 +69,7 @@ public class User {
     @NotBlank(message = "El nombre de usuario es requerido")
     private String username;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private Set<UserVaccine> userVaccines = new HashSet<>();
 
     private boolean vaccination;

@@ -1,0 +1,44 @@
+<app-navbar></app-navbar>
+<mat-card>
+    <mat-form-field appearance="outline">
+        <mat-label>Filter</mat-label>
+        <input (keyup)="filter($event)" matInput placeholder="Ingrese un filtro personalizado">
+        <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="actions">
+            <mat-header-cell mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let user">
+                <button (click)="update(user.id)" color="accent" mat-icon-button *ngIf="user.username!=username">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button (click)="delete(user.id,user.name,user.surname)" color="warn" mat-icon-button
+                    *ngIf="user.username!=username">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="dni">
+            <mat-header-cell mat-header-cell *matHeaderCellDef>Cédula</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let user">{{user.dni}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="email">
+            <mat-header-cell mat-header-cell *matHeaderCellDef>Correo electrónico</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let user">{{user.dni}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="name">
+            <mat-header-cell mat-header-cell *matHeaderCellDef>Nombre/Nombres</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let user">{{user.name}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="roles">
+            <mat-header-cell mat-header-cell *matHeaderCellDef>Roles</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let user">{{user.roles}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="surname">
+            <mat-header-cell mat-header-cell *matHeaderCellDef>Apellido/Apellidos</mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let user">{{user.surname}}</mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns:displayedColumns"></mat-row>
+    </mat-table>
+</mat-card>

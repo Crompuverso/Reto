@@ -1,26 +1,37 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { httpHeaders, url } from 'src/assets/utils/configuration';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { LoginDTO } from '../model/login-dto';
-import { UserDTO } from '../model/user-dto';
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private httpHeaders: {};
-  private url: String;
+  private tokenKey: string;
+  private userKey: string;
 
-  constructor(private httpClient: HttpClient) {
-    this.httpHeaders = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
-    this.url = 'http://localhost:8080/api/auth/';
+  constructor(private httpClient: HttpClient, private router: Router) {
+    this.tokenKey = 'auth-token';
+    this.userKey = 'auth-user';
   }
 
-  login(login: LoginDTO): Observable<any> {
-    return this.httpClient.post(this.url + 'login', login, this.httpHeaders);
+  public isLogged(): boolean {
+    let token = sessionStorage.getItem(this.tokenKey);
+    if (token == null || token == undefined || token == '') {
+      return false;
+    }
+    return true;
   }
 
-  register(user: UserDTO): Observable<any> {
-    return this.httpClient.post(this.url + 'register', user, this.httpHeaders);
+  public login(login: LoginDTO): Observable<any> {
+    return this.httpClient.post(url + 'auth/login', login, httpHeaders);
+  }
+
+  public logout(): void {
+    window.sessionStorage.removeItem(this.tokenKey);
+    window.sessionStorage.removeItem(this.userKey);
+    this.router.navigateByUrl('/');
   }
 }

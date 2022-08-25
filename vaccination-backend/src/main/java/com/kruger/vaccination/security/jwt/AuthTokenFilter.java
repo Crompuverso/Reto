@@ -22,7 +22,7 @@ import com.kruger.vaccination.security.services.UserDetailsServiceImpl;
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtil jwtProvider;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -34,8 +34,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws IOException, ServletException {
         try {
             String token = parseJwt(httpServletRequest);
-            if (token != null && jwtUtils.validateJwtToken(token)) {
-                String username = jwtUtils.getUsernameFromToken(token);
+            if (token != null && jwtProvider.validateJwtToken(token)) {
+                String username = jwtProvider.getUsernameFromToken(token);
                 UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

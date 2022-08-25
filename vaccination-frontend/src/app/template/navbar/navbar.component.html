@@ -1,0 +1,14 @@
+<mat-toolbar>
+    <button (click)="redirect('admin')" mat-icon-button *ngIf="isAdmin&&url!='/admin'">
+        <img alt="Kruger" class="icon"
+            src="https://krugercorp.com/wp-content/uploads/2022/02/KRUGER-icon-naranja-03.png">
+    </button>
+    <button (click)="redirect('admin/register')" mat-icon-button *ngIf="isAdmin&&url!='/admin/register'">
+        <mat-icon>group_add</mat-icon>
+    </button>
+    <span class="spacer"></span>
+    <button (click)="logout()" mat-button>
+        <span>Logout</span>
+        <mat-icon>logout</mat-icon>
+    </button>
+</mat-toolbar>

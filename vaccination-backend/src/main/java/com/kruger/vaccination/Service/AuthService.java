@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kruger.vaccination.DTO.JwtDTO;
-import com.kruger.vaccination.security.jwt.JwtUtils;
+import com.kruger.vaccination.security.jwt.JwtUtil;
 import com.kruger.vaccination.security.services.UserDetailsImpl;
 
 @Service
 public class AuthService implements IAuthService {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtil jwtUtils;
 
     @Override
     @Transactional
@@ -27,7 +27,7 @@ public class AuthService implements IAuthService {
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetailsImpl.getAuthorities().stream().map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        return new JwtDTO(userDetailsImpl.getDni(), userDetailsImpl.getEmail(), roles, token,
+        return new JwtDTO(userDetailsImpl.getName(), roles, userDetailsImpl.getSurname(), token,
                 userDetailsImpl.getUsername());
     }
 }

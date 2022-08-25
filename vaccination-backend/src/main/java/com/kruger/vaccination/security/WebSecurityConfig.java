@@ -18,8 +18,8 @@ import com.kruger.vaccination.security.jwt.AuthEntryPointJwt;
 import com.kruger.vaccination.security.jwt.AuthTokenFilter;
 
 @Configuration
-@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
 public class WebSecurityConfig {
 
     @Autowired

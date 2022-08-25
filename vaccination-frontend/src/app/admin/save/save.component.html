@@ -1,0 +1,60 @@
+<app-navbar></app-navbar>
+<mat-card>
+    <mat-card-header *ngIf="!id">
+        <mat-card-title>Registrar usuario</mat-card-title>
+    </mat-card-header>
+    <mat-card-header *ngIf="id">
+        <mat-card-title>Actualizar usuario</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <form [formGroup]="userForm" (ngSubmit)="save()">
+            <mat-form-field>
+                <mat-label>Cédula</mat-label>
+                <input formControlName="dni" matInput placeholder="Cédula">
+                <mat-icon matSuffix>fingerprint</mat-icon>
+                <mat-error *ngIf="userForm.controls['dni'].hasError('required')">
+                    La cédula del usuario es <strong>requerida</strong>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Nombre/nombres</mat-label>
+                <input formControlName="name" matInput placeholder="Nombre/nombres">
+                <mat-icon matSuffix>drive_file_rename_outline</mat-icon>
+                <mat-error *ngIf="userForm.controls['name'].hasError('required')">
+                    El campo de nombre o nombres del usuario es <strong>requerido</strong>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Apellido/apellidos</mat-label>
+                <input formControlName="surname" matInput placeholder="Apellido/apellidos">
+                <mat-icon matSuffix>drive_file_rename_outline</mat-icon>
+                <mat-error *ngIf="userForm.controls['surname'].hasError('required')">
+                    El campo de apellido o apellidos del usuario es <strong>requerido</strong>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Correo electrónico</mat-label>
+                <input formControlName="email" matInput placeholder="Correo electrónico">
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="userForm.controls['email'].hasError('email')">
+                    Ingrese un correo electrónico <strong>válido</strong>
+                </mat-error>
+                <mat-error *ngIf="userForm.controls['email'].hasError('required')">
+                    El correo electrónico del usuario es <strong>requerido</strong>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Rol</mat-label>
+                <mat-select formControlName="roles">
+                    <mat-option value="usuario">Usuario</mat-option>
+                    <mat-option value="administrador">Administrador</mat-option>
+                </mat-select>
+                <mat-icon matSuffix>manage_accounts</mat-icon>
+                <mat-error *ngIf="userForm.controls['roles'].hasError('required')">
+                    El rol del usuario es <strong>requerido</strong>
+                </mat-error>
+            </mat-form-field>
+            <button color="primary" [disabled]="!userForm.valid" mat-raised-button type="submit">Registrar</button>
+        </form>
+    </mat-card-content>
+</mat-card>

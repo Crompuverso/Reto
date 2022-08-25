@@ -5,8 +5,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { TemplateModule } from './template/template.module';
 
 @NgModule({
+  bootstrap: [AppComponent],
   declarations: [
     AppComponent
   ],
@@ -14,9 +16,9 @@ import { NgModule } from '@angular/core';
     AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    TemplateModule
   ],
-  providers: [authInterceptorProviders],
-  bootstrap: [AppComponent]
+  providers: [authInterceptorProviders]
 })
 export class AppModule { }

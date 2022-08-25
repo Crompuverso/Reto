@@ -1,5 +1,20 @@
 # Getting Started
 
+## Backend
+
+The project was generated with [SpringInitializer](https://start.spring.io/)
+Change in application.properties DB password configuration, changing postgres with your PostgreSQL password
+Run as SpringBoot Application using your favorite IDE
+
+## DB sql
+
+The sql file was generated using PGAdmin4 Backup generator
+Run this SQL to have the required users to prove the application
+The admin user is csrojas with password Csrojasm972100344189.
+This is the automatic password generation from you email, you dni and a special character in this case a point
+
+## Frontend
+
 For further reference, please consider the following sections:
 
 * [Official Gradle documentation](https://docs.gradle.org)

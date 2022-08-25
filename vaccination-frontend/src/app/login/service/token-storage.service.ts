@@ -11,7 +11,6 @@ export class TokenStorageService {
     this.tokenKey = 'auth-token';
     this.userKey = 'auth-user';
   }
-
   public get token(): string {
     return sessionStorage.getItem(this.tokenKey)!;
   }

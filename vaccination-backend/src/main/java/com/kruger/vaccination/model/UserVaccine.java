@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
@@ -24,17 +25,27 @@ public class UserVaccine {
     @NotBlank(message = "El número de dosis es requerido")
     private int dose;
 
-    @DateTimeFormat
-    @NotBlank(message = "La fecha de vacunación es requerida")
-    private Date vaccineDate;
-
     @Id
-    @JoinColumn(name = "workerId", referencedColumnName = "id")
+    @JoinColumn(foreignKey = @ForeignKey(name = "workerId"), name = "workerId", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
     @Id
-    @JoinColumn(name = "vaccineId", referencedColumnName = "id")
+    @JoinColumn(foreignKey = @ForeignKey(name = "vaccineId"), name = "vaccineId", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Vaccine vaccine;
+
+    @DateTimeFormat
+    @NotBlank(message = "La fecha de vacunación es requerida")
+    private Date vaccineDate;
+
+    public UserVaccine() {
+    }
+
+    public UserVaccine(int dose, User user, Vaccine vaccine, Date vaccineDate) {
+        this.dose = dose;
+        this.user = user;
+        this.vaccine = vaccine;
+        this.vaccineDate = vaccineDate;
+    }
 }
